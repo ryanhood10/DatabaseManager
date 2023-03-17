@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS role_db;
-CREATE DATABASE role_db;
-USE role_db;
+DROP DATABASE IF EXISTS employee_db;
+CREATE DATABASE employee_db;
+USE employee_db;
 
 CREATE TABLE role (
     id INT PRIMARY KEY,
