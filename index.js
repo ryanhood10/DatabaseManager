@@ -37,6 +37,47 @@ pool.connect(
 //inquirer prompt
 //defining functions to use in questions
 
+function viewAllDepartments() {
+  const query = 'SELECT * FROM department';
+  pool.promise().query(query)
+    .then(([rows, fields]) => {
+      console.table(rows);
+      mainMenu();
+    })
+    .catch((err) => {
+      console.error('Error executing query', err.stack);
+      mainMenu();
+    });
+}
+
+function viewAllRoles() {
+  const query = 'SELECT * FROM role';
+  pool.promise().query(query)
+    .then(([rows, fields]) => {
+      console.table(rows);
+      mainMenu();
+    })
+    .catch((err) => {
+      console.error('Error executing query', err.stack);
+      mainMenu();
+    });
+}
+
+function viewAllEmployees() {
+  const query = 'SELECT * FROM employee';
+  pool.promise().query(query)
+    .then(([rows, fields]) => {
+      console.table(rows);
+      mainMenu();
+    })
+    .catch((err) => {
+      console.error('Error executing query', err.stack);
+      mainMenu();
+    });
+}
+
+
+
 function mainMenu() {
   inquirer
     .prompt([
@@ -57,11 +98,14 @@ function mainMenu() {
     ])
     .then((answers) => {
       if (answers.choice === 'View all departments') {
+        viewAllDepartments()
         // Call function to view all departments
       } else if (answers.choice === 'View all roles') {
         // Call function to view all roles
+        viewAllRoles();
       } else if (answers.choice === 'View all employees') {
         // Call function to view all employees
+        viewAllEmployees();
       } else if (answers.choice === 'Add a department') {
         // Call a function to add a department
         addDepartment();
@@ -110,10 +154,21 @@ function mainMenu() {
   }
   
   //write a function to grab the department choices so we can display them
-
-function addRole() {
+  async function getDepartmentChoices() {
+    const query = 'SELECT id, name FROM department';
+    try {
+      const [rows] = await pool.promise().query(query);
+      return rows.map((row) => {
+        return { name: row.name, value: row.id };
+      });
+    } catch (error) {
+      console.log('Error fetching department choices:', error);
+      return [];
+    }
+  } 
+  async function addRole() {
   // Retrieve department data for choices
-  const departmentChoices = []; // Replace with a function call that retrieves department data
+  const departmentChoices = await getDepartmentChoices(); // Replace with a function call that retrieves department data
 
   inquirer
     .prompt([
@@ -156,9 +211,22 @@ function addRole() {
     });
 }
 
-function addEmployee() {
+//create a function to get the roles created
+async function getRoleChoices() {
+  const query = `SELECT id, title FROM role`;
+  try {
+    const [rows] = await pool.promise().query(query);
+    return rows.map((row) => ({ name: row.title, value: row.id }));
+  } catch (error) {
+    console.log('Error retrieving role data:', error);
+    return [];
+  }
+}
+
+
+async function addEmployee() {
   // Retrieve role and manager data for choices
-  const roleChoices = []; // Replace with a function call that retrieves role data
+  const roleChoices = await getRoleChoices(); // Replace with a function call that retrieves role data
   const managerChoices = []; // Replace with a function call that retrieves manager data
 
   inquirer
@@ -178,13 +246,14 @@ function addEmployee() {
         name: 'employeeRole',
         message: "Select the employee's role:",
         choices: roleChoices,
-      },
-      {
-        type: 'list',
-        name: 'employeeManager',
-        message: "Select the employee's manager:",
-        choices: managerChoices,
-      },
+      }
+      // ,
+      // {
+      //   type: 'list',
+      //   name: 'employeeManager',
+      //   message: "Select the employee's manager:",
+      //   choices: managerChoices,
+      // },
     ])
     .then((employeeAnswers) => {
       console.log('employee added!')
@@ -203,11 +272,24 @@ function addEmployee() {
     });
 }
 
+//write a function to getEmployees that youve created
+async function getEmployeeChoices() {
+  const query = `SELECT id, CONCAT(first_name, ' ', last_name) AS fullName FROM employee`;
+  try {
+    const [rows] = await pool.promise().query(query);
+    return rows.map((row) => ({ name: row.fullName, value: row.id }));
+  } catch (error) {
+    console.log('Error retrieving employee data:', error);
+    return [];
+  }
+}
 
-function updateEmployeeRole() {
+
+
+  async function updateEmployeeRole() {
   // Retrieve employee and role data for choices
-  const employeeChoices = []; // Replace with a function call that retrieves employee data
-  const roleChoices = []; // Replace with a function call that retrieves role data
+  const employeeChoices = await getEmployeeChoices(); // Replace with a function call that retrieves employee data
+  const roleChoices = await getRoleChoices(); // Replace with a function call that retrieves role data
 
   inquirer
     .prompt([
