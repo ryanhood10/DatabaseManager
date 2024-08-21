@@ -1,4 +1,4 @@
-require('dotenv').config();
+// require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');  // Import the PostgreSQL client
 const cors = require('cors');
