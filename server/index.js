@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');  // Import the PostgreSQL client
 const cors = require('cors');
+const path = require('path');  // Add this line to require the path module
 
 const app = express();
 const port = process.env.PORT || 3000;
