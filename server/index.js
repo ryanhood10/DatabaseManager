@@ -6,6 +6,9 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../client/build')));
+
 app.use(express.json());
 app.use(cors());
 
@@ -111,6 +114,11 @@ app.put('/api/employees/:id/role', async (req, res) => {
     .catch((err) => {
       res.status(500).json({ error: err.message });
     });
+});
+
+// The "catchall" handler: for any request that doesn't match an API route, send back React's index.html file.
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });
 
 // Start the server
