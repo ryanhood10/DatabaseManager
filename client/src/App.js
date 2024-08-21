@@ -1,12 +1,14 @@
 import './App.css';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import DatabasePage from './pages/Homepage';
+import DatabasePage from './pages/DatabasePage';
+import HomePage from './pages/Homepage2';
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header"></header>
       <Router>
         <Routes>
           {/* HomePage  */}
@@ -14,7 +16,19 @@ function App() {
             path="/"
             element={
               <React.Fragment>
+                <Header/>
+                <HomePage />
+                <Footer />
+              </React.Fragment>
+            }
+          />
+          <Route
+            path="/Database"
+            element={
+              <React.Fragment>
+                                <Header/>
                 <DatabasePage />
+                <Footer />
               </React.Fragment>
             }
           />
