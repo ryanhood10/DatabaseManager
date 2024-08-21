@@ -1,17 +1,15 @@
 {
-    "name": "akira-database-manager",
-    "version": "1.0.0",
-    "scripts": {
-      "start": "node server/index.js",        
-      "heroku-postbuild": "npm run build --prefix client",
-      "build": "cd client && npm install && npm run build" 
-    },
-    "engines": {
-      "node": "14.x" 
-    },
-    "dependencies": {
-      "concurrently": "^6.0.0" 
-    },
-    "devDependencies": {}
-  }
-  
+  "name": "akira-database-manager",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server/index.js",
+    "heroku-postbuild": "npm install --prefix client && npm run build --prefix client"
+  },
+  "engines": {
+    "node": "14.x"
+  },
+  "dependencies": {
+    "concurrently": "^6.0.0"
+  },
+  "devDependencies": {}
+}
