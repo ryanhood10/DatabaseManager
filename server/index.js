@@ -1,6 +1,11 @@
-if (process.env.NODE_ENV === 'development') {
-  require('dotenv').config();
+try {
+  if (process.env.NODE_ENV === 'development') {
+      require('dotenv').config();
+  }
+} catch (error) {
+  console.warn('dotenv module not found; skipping loading environment variables from .env file.');
 }
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
