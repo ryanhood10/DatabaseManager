@@ -1,4 +1,4 @@
-const pool = require('../utils/db2'); // Ensure the path is correct
+const { pool } = require('../utils/db'); // Correct path to db.js
 
 const getRoles = async () => {
   try {

@@ -1,14 +1,13 @@
-try {
-  if (process.env.NODE_ENV === 'development') {
-      require('dotenv').config();
-  }
-} catch (error) {
-  console.warn('dotenv module not found; skipping loading environment variables from .env file.');
-}
+require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const pool = require('./db/utils/db')
+
+console.log(process.env.DATABASE_URL);
+
+
 
 const { getDepartments, addDepartment, deleteDepartment, updateDepartmentName } = require('./db/queries/department');
 const { getEmployees, addEmployee, deleteEmployee, updateEmployeeRole, updateEmployeeManager } = require('./db/queries/employee');

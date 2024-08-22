@@ -1,7 +1,8 @@
-const pool = require('../utils/db2'); // Ensure the path is correct
+const { pool } = require('../utils/db'); // Correct path to db.js
 
 const getEmployees = async () => {
   try {
+    // Directly use pool.query() for PostgreSQL
     const { rows } = await pool.query('SELECT * FROM employee');
     return rows || [];  // Return an empty array if no rows found
   } catch (error) {
@@ -9,7 +10,6 @@ const getEmployees = async () => {
     throw error;
   }
 };
-
 
 const addEmployee = async (firstName, lastName, roleId, managerId) => {
   try {

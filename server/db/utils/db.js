@@ -1,22 +1,24 @@
-const mysql = require('mysql2/promise');
+const { Pool } = require("pg");
 
-const pool = mysql.createPool({
+const pool = new Pool({
+  user: 'postgres',
+  password: 'RicoBandito',
   host: 'localhost',
-  user: 'your-mysql-username',
-  password: 'your-mysql-password',
-  database: 'department_db'
+  port: 5432,
+  database: 'testcompany',
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
 const departmentSchema = `
-  CREATE TABLE department (
-    id INT PRIMARY KEY,
+  CREATE TABLE IF NOT EXISTS department (
+    id SERIAL PRIMARY KEY,
     name VARCHAR(30) NOT NULL
   )
 `;
 
 const roleSchema = `
-  CREATE TABLE role (
-    id INT PRIMARY KEY,
+  CREATE TABLE IF NOT EXISTS role (
+    id SERIAL PRIMARY KEY,
     title VARCHAR(30) NOT NULL,
     salary DECIMAL(10, 2) NOT NULL,
     department_id INT NOT NULL,
@@ -25,8 +27,8 @@ const roleSchema = `
 `;
 
 const employeeSchema = `
-  CREATE TABLE employee (
-    id INT PRIMARY KEY,
+  CREATE TABLE IF NOT EXISTS employee (
+    id SERIAL PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
     role_id INT NOT NULL,
@@ -38,11 +40,9 @@ const employeeSchema = `
 
 const linkSchemas = async () => {
   try {
-    const connection = await pool.getConnection();
-    await connection.query(departmentSchema);
-    await connection.query(roleSchema);
-    await connection.query(employeeSchema);
-    connection.release();
+    await pool.query(departmentSchema);
+    await pool.query(roleSchema);
+    await pool.query(employeeSchema);
     console.log('Successfully linked schemas.');
   } catch (error) {
     console.error(error);

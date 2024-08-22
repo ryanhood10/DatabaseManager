@@ -1,4 +1,4 @@
-const pool = require('../utils/db2'); // Ensure the path is correct
+const { pool } = require('../utils/db'); // Correct path to db.js
 
 
 // Query to get departments
@@ -11,8 +11,6 @@ const getDepartments = async () => {
     throw error;
   }
 };
-
-
 
 // Query to add a department
 const addDepartment = async (name) => {
