@@ -1,120 +1,194 @@
 require('dotenv').config();
 const express = require('express');
-const { Pool } = require('pg');  // Import the PostgreSQL client
 const cors = require('cors');
-const path = require('path');  // Add this line to require the path module
+const path = require('path');
+
+const { getDepartments, addDepartment, deleteDepartment, updateDepartmentName } = require('./db/queries/department');
+const { getEmployees, addEmployee, deleteEmployee, updateEmployeeRole, updateEmployeeManager } = require('./db/queries/employee');
+const { getRoles, addRole, deleteRole, updateRoleTitle, updateRoleSalary } = require('./db/queries/role');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));
-
 app.use(express.json());
 app.use(cors());
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,  // Use the DATABASE_URL from environment variables
-  ssl: {
-    rejectUnauthorized: false  // This is needed for Heroku Postgres connections
+// Routes for Departments
+app.get('/api/departments', async (req, res) => {
+  try {
+    const departments = await getDepartments();
+    res.json(departments || []);  // Ensure an empty array is returned if there are no results
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-pool.connect((err) => {
-  if (err) {
-    console.error('Error connecting to the database:', err.stack);
-  } else {
-    console.log('Connected to the PostgreSQL database.');
+app.post('/api/departments', async (req, res) => {
+  try {
+    const { departmentName } = req.body;
+    const departmentId = await addDepartment(departmentName);
+    res.status(201).json({ id: departmentId, message: 'Department added successfully.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// Get all departments
-app.get('/api/departments', (req, res) => {
-  const query = 'SELECT * FROM department';
-  pool.query(query)
-    .then(({ rows }) => {
-      res.json(rows);
-    })
-    .catch((err) => {
-      res.status(500).json({ error: err.message });
-    });
+app.delete('/api/departments/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const affectedRows = await deleteDepartment(id);
+    if (affectedRows > 0) {
+      res.json({ message: 'Department deleted successfully.' });
+    } else {
+      res.status(404).json({ message: 'Department not found.' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Add a new department
-app.post('/api/departments', (req, res) => {
-  const { departmentName } = req.body;
-  const query = 'INSERT INTO department (name) VALUES ($1)';
-  pool.query(query, [departmentName])
-    .then(() => {
-      res.status(201).json({ message: 'Department added successfully.' });
-    })
-    .catch((err) => {
-      res.status(500).json({ error: err.message });
-    });
+app.put('/api/departments/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    const affectedRows = await updateDepartmentName(id, name);
+    if (affectedRows > 0) {
+      res.json({ message: 'Department updated successfully.' });
+    } else {
+      res.status(404).json({ message: 'Department not found.' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Get all roles
-app.get('/api/roles', (req, res) => {
-  const query = 'SELECT * FROM role';
-  pool.query(query)
-    .then(({ rows }) => {
-      res.json(rows);
-    })
-    .catch((err) => {
-      res.status(500).json({ error: err.message });
-    });
+// Routes for Employees
+app.get('/api/employees', async (req, res) => {
+  try {
+    const employees = await getEmployees();
+    res.json(employees|| []); 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Add a new role
-app.post('/api/roles', async (req, res) => {
-  const { roleName, roleSalary, roleDepartment } = req.body;
-  const query = 'INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3)';
-  pool.query(query, [roleName, roleSalary, roleDepartment])
-    .then(() => {
-      res.status(201).json({ message: 'Role added successfully.' });
-    })
-    .catch((err) => {
-      res.status(500).json({ error: err.message });
-    });
-});
-
-// Get all employees
-app.get('/api/employees', (req, res) => {
-  const query = 'SELECT * FROM employee';
-  pool.query(query)
-    .then(({ rows }) => {
-      res.json(rows);
-    })
-    .catch((err) => {
-      res.status(500).json({ error: err.message });
-    });
-});
-
-// Add a new employee
 app.post('/api/employees', async (req, res) => {
-  const { firstName, lastName, employeeRole, employeeManager } = req.body;
-  const query = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)';
-  pool.query(query, [firstName, lastName, employeeRole, employeeManager])
-    .then(() => {
-      res.status(201).json({ message: 'Employee added successfully.' });
-    })
-    .catch((err) => {
-      res.status(500).json({ error: err.message });
-    });
+  try {
+    const { firstName, lastName, roleId, managerId } = req.body;
+    const employeeId = await addEmployee(firstName, lastName, roleId, managerId);
+    res.status(201).json({ id: employeeId, message: 'Employee added successfully.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Update an employee's role
+app.delete('/api/employees/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const affectedRows = await deleteEmployee(id);
+    if (affectedRows > 0) {
+      res.json({ message: 'Employee deleted successfully.' });
+    } else {
+      res.status(404).json({ message: 'Employee not found.' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.put('/api/employees/:id/role', async (req, res) => {
-  const employeeId = req.params.id;
-  const { newRole } = req.body;
-  const query = 'UPDATE employee SET role_id = $1 WHERE id = $2';
-  pool.query(query, [newRole, employeeId])
-    .then(() => {
-      res.status(200).json({ message: 'Employee role updated successfully.' });
-    })
-    .catch((err) => {
-      res.status(500).json({ error: err.message });
-    });
+  try {
+    const { id } = req.params;
+    const { roleId } = req.body;
+    const affectedRows = await updateEmployeeRole(id, roleId);
+    if (affectedRows > 0) {
+      res.json({ message: 'Employee role updated successfully.' });
+    } else {
+      res.status(404).json({ message: 'Employee not found.' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/employees/:id/manager', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { managerId } = req.body;
+    const affectedRows = await updateEmployeeManager(id, managerId);
+    if (affectedRows > 0) {
+      res.json({ message: 'Employee manager updated successfully.' });
+    } else {
+      res.status(404).json({ message: 'Employee not found.' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Routes for Roles
+app.get('/api/roles', async (req, res) => {
+  try {
+    const roles = await getRoles();
+    res.json(roles|| []);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/roles', async (req, res) => {
+  try {
+    const { title, salary, department_id } = req.body;
+    const roleId = await addRole(title, salary, department_id);
+    res.status(201).json({ id: roleId, message: 'Role added successfully.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/roles/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const affectedRows = await deleteRole(id);
+    if (affectedRows > 0) {
+      res.json({ message: 'Role deleted successfully.' });
+    } else {
+      res.status(404).json({ message: 'Role not found.' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/roles/:id/title', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title } = req.body;
+    const affectedRows = await updateRoleTitle(id, title);
+    if (affectedRows > 0) {
+      res.json({ message: 'Role title updated successfully.' });
+    } else {
+      res.status(404).json({ message: 'Role not found.' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/roles/:id/salary', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { salary } = req.body;
+    const affectedRows = await updateRoleSalary(id, salary);
+    if (affectedRows > 0) {
+      res.json({ message: 'Role salary updated successfully.' });
+    } else {
+      res.status(404).json({ message: 'Role not found.' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // The "catchall" handler: for any request that doesn't match an API route, send back React's index.html file.

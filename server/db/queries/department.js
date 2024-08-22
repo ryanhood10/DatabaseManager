@@ -1,52 +1,51 @@
-const { pool } = require('./db');
+const pool = require('../utils/db2'); // Ensure the path is correct
 
-//query to get departments
+
+// Query to get departments
 const getDepartments = async () => {
   try {
-    const connection = await pool.getConnection();
-    const [rows] = await connection.query('SELECT * FROM department');
-    connection.release();
-    return rows;
+    const { rows } = await pool.query('SELECT * FROM department');
+    return rows || [];  // Return an empty array if no rows found
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching departments:', error);
+    throw error;
   }
 };
 
-// query to add a department
+
+
+// Query to add a department
 const addDepartment = async (name) => {
   try {
-    const connection = await pool.getConnection();
-    const [result] = await connection.query('INSERT INTO department (name) VALUES (?)', [name]);
-    connection.release();
-    return result.insertId;
+    const result = await pool.query('INSERT INTO department (name) VALUES ($1) RETURNING id', [name]);
+    return result.rows[0].id;
   } catch (error) {
-    console.error(error);
+    console.error('Error adding department:', error);
+    throw error;
   }
 };
 
-//query to delete a department
+// Query to delete a department
 const deleteDepartment = async (id) => {
   try {
-    const connection = await pool.getConnection();
-    const [result] = await connection.query('DELETE FROM department WHERE id = ?', [id]);
-    connection.release();
-    return result.affectedRows;
+    const result = await pool.query('DELETE FROM department WHERE id = $1', [id]);
+    return result.rowCount;
   } catch (error) {
-    console.error(error);
+    console.error('Error deleting department:', error);
+    throw error;
   }
 };
 
-//query to update a Department Name
+// Query to update a department name
 const updateDepartmentName = async (id, name) => {
   try {
-    const connection = await pool.getConnection();
-    const [result] = await connection.query('UPDATE department SET name = ? WHERE id = ?', [name, id]);
-    connection.release();
-    return result.affectedRows;
+    const result = await pool.query('UPDATE department SET name = $1 WHERE id = $2', [name, id]);
+    return result.rowCount;
   } catch (error) {
-    console.error(error);
+    console.error('Error updating department name:', error);
+    throw error;
   }
 };
 
 // Export the functions
-module.exports = {getDepartments, addDepartment, deleteDepartment, updateDepartmentName};
+module.exports = { getDepartments, addDepartment, deleteDepartment, updateDepartmentName };

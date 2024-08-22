@@ -1,15 +1,15 @@
-const { pool } = require('./db');
+const pool = require('../utils/db2'); // Ensure the path is correct
 
 const getEmployees = async () => {
   try {
-    const connection = await pool.getConnection();
-    const [rows] = await connection.query('SELECT * FROM employee');
-    connection.release();
-    return rows;
+    const { rows } = await pool.query('SELECT * FROM employee');
+    return rows || [];  // Return an empty array if no rows found
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching employees:', error);
+    throw error;
   }
 };
+
 
 const addEmployee = async (firstName, lastName, roleId, managerId) => {
   try {

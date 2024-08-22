@@ -1,59 +1,59 @@
-const { pool } = require('./db');
+const pool = require('../utils/db2'); // Ensure the path is correct
 
 const getRoles = async () => {
   try {
-    const connection = await pool.getConnection();
-    const [rows] = await connection.query('SELECT * FROM role');
-    connection.release();
-    return rows;
+    const { rows } = await pool.query('SELECT * FROM role');
+    return rows || [];  // Return an empty array if no rows found
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching roles:', error);
+    throw error;
   }
 };
 
+
+
+
 const addRole = async (title, salary, department_id) => {
   try {
-    const connection = await pool.getConnection();
-    const [result] = await connection.query('INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [title, salary, department_id]);
-    connection.release();
-    return result.insertId;
+    const result = await pool.query(
+      'INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3) RETURNING id',
+      [title, salary, department_id]
+    );
+    return result.rows[0].id;
   } catch (error) {
-    console.error(error);
+    console.error('Error adding role:', error);
+    throw error;
   }
 };
 
 const deleteRole = async (id) => {
   try {
-    const connection = await pool.getConnection();
-    const [result] = await connection.query('DELETE FROM role WHERE id = ?', [id]);
-    connection.release();
-    return result.affectedRows;
+    const result = await pool.query('DELETE FROM role WHERE id = $1', [id]);
+    return result.rowCount;
   } catch (error) {
-    console.error(error);
+    console.error('Error deleting role:', error);
+    throw error;
   }
 };
 
 const updateRoleTitle = async (id, title) => {
   try {
-    const connection = await pool.getConnection();
-    const [result] = await connection.query('UPDATE role SET title = ? WHERE id = ?', [title, id]);
-    connection.release();
-    return result.affectedRows;
+    const result = await pool.query('UPDATE role SET title = $1 WHERE id = $2', [title, id]);
+    return result.rowCount;
   } catch (error) {
-    console.error(error);
+    console.error('Error updating role title:', error);
+    throw error;
   }
 };
 
 const updateRoleSalary = async (id, salary) => {
   try {
-    const connection = await pool.getConnection();
-    const [result] = await connection.query('UPDATE role SET salary = ? WHERE id = ?', [salary, id]);
-    connection.release();
-    return result.affectedRows;
+    const result = await pool.query('UPDATE role SET salary = $1 WHERE id = $2', [salary, id]);
+    return result.rowCount;
   } catch (error) {
-    console.error(error);
+    console.error('Error updating role salary:', error);
+    throw error;
   }
 };
 
-// Export the functions
 module.exports = { getRoles, addRole, deleteRole, updateRoleTitle, updateRoleSalary };
