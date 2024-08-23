@@ -11,25 +11,27 @@ const getEmployees = async () => {
   }
 };
 
+// Add employee
 const addEmployee = async (firstName, lastName, roleId, managerId) => {
   try {
-    const connection = await pool.getConnection();
-    const [result] = await connection.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [firstName, lastName, roleId, managerId]);
-    connection.release();
-    return result.insertId;
+    const result = await pool.query(
+      'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4) RETURNING id',
+      [firstName, lastName, roleId, managerId]
+    );
+    return result.rows[0].id; // Return the inserted ID
   } catch (error) {
-    console.error(error);
+    console.error('Error adding employee:', error);
+    throw error;
   }
 };
 
 const deleteEmployee = async (id) => {
   try {
-    const connection = await pool.getConnection();
-    const [result] = await connection.query('DELETE FROM employee WHERE id = ?', [id]);
-    connection.release();
-    return result.affectedRows;
+    const result = await pool.query('DELETE FROM employee WHERE id = $1', [id]);
+    return result.rowCount;
   } catch (error) {
-    console.error(error);
+    console.error('Error deleting employee:', error);
+    throw error;
   }
 };
 

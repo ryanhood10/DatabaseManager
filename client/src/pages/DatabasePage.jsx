@@ -11,15 +11,26 @@ function DatabasePage() {
 
   const [selectedEmployee, setSelectedEmployee] = useState({ id: '', newRoleId: '' });
 
+  // Base URL for the backend API
+  const apiBaseUrl = 'http://localhost:3001';
+
   // Fetch all departments, roles, and employees when the component mounts
   useEffect(() => {
-    fetch('/api/departments').then(response => response.json()).then(data => setDepartments(data));
-    fetch('/api/roles').then(response => response.json()).then(data => setRoles(data));
-    fetch('/api/employees').then(response => response.json()).then(data => setEmployees(data));
-  }, []);
+    fetch(`${apiBaseUrl}/api/departments`)
+      .then(response => response.json())
+      .then(data => setDepartments(data));
+      
+    fetch(`${apiBaseUrl}/api/roles`)
+      .then(response => response.json())
+      .then(data => setRoles(data));
+      
+    fetch(`${apiBaseUrl}/api/employees`)
+      .then(response => response.json())
+      .then(data => setEmployees(data));
+  }, [apiBaseUrl]);
 
   const handleAddDepartment = () => {
-    fetch('/api/departments', {
+    fetch(`${apiBaseUrl}/api/departments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ departmentName: newDepartment })
@@ -30,7 +41,7 @@ function DatabasePage() {
   };
 
   const handleAddRole = () => {
-    fetch('/api/roles', {
+    fetch(`${apiBaseUrl}/api/roles`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newRole)
@@ -41,7 +52,7 @@ function DatabasePage() {
   };
 
   const handleAddEmployee = () => {
-    fetch('/api/employees', {
+    fetch(`${apiBaseUrl}/api/employees`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newEmployee)
@@ -52,7 +63,7 @@ function DatabasePage() {
   };
 
   const handleUpdateEmployeeRole = () => {
-    fetch(`/api/employees/${selectedEmployee.id}/role`, {
+    fetch(`${apiBaseUrl}/api/employees/${selectedEmployee.id}/role`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ newRole: selectedEmployee.newRoleId })
@@ -61,6 +72,24 @@ function DatabasePage() {
       window.location.reload();
     });
   };
+
+  const handleDeleteEmployee = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/employees/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+  
+      if (response.ok) {
+        setEmployees(employees.filter(employee => employee.id !== id));
+      } else {
+        console.error('Failed to delete the employee');
+      }
+    } catch (error) {
+      console.error('Error deleting employee:', error);
+    }
+  };
+  
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -192,8 +221,14 @@ function DatabasePage() {
                 <td className="py-2">{employee.first_name} {employee.last_name}</td>
                 <td className="py-2">{roles.find(role => role.id === employee.role_id)?.title}</td>
                 <td className="py-2">
-                  <button className="bg-red-500 text-white px-4 py-2 rounded-md">Delete</button>
+                  <button 
+                    className="bg-red-500 text-white px-4 py-2 rounded-md" 
+                    onClick={() => handleDeleteEmployee(employee.id)}
+                  >
+                    Delete
+                  </button>
                 </td>
+
               </tr>
             ))}
           </tbody>

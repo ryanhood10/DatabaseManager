@@ -1,9 +1,7 @@
-require('dotenv').config();
-
+require('dotenv').config(); 
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const pool = require('./db/utils/db')
 
 console.log(process.env.DATABASE_URL);
 
@@ -14,7 +12,7 @@ const { getEmployees, addEmployee, deleteEmployee, updateEmployeeRole, updateEmp
 const { getRoles, addRole, deleteRole, updateRoleTitle, updateRoleSalary } = require('./db/queries/role');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(express.json());
@@ -102,6 +100,7 @@ app.delete('/api/employees/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 app.put('/api/employees/:id/role', async (req, res) => {
   try {
