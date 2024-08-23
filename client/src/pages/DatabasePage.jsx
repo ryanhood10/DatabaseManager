@@ -66,13 +66,13 @@ function DatabasePage() {
     fetch(`${apiBaseUrl}/api/employees/${selectedEmployee.id}/role`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newRole: selectedEmployee.newRoleId })
+      body: JSON.stringify({ roleId: selectedEmployee.newRoleId }) // use roleId instead of newRole
     }).then(response => response.json()).then(() => {
       setSelectedEmployee({ id: '', newRoleId: '' });
       window.location.reload();
     });
   };
-
+  
   const handleDeleteEmployee = async (id) => {
     try {
       const response = await fetch(`http://localhost:3001/api/employees/${id}`, {

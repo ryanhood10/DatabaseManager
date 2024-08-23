@@ -117,6 +117,7 @@ app.put('/api/employees/:id/role', async (req, res) => {
   }
 });
 
+
 app.put('/api/employees/:id/manager', async (req, res) => {
   try {
     const { id } = req.params;

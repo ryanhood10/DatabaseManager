@@ -37,14 +37,14 @@ const deleteEmployee = async (id) => {
 
 const updateEmployeeRole = async (id, roleId) => {
   try {
-    const connection = await pool.getConnection();
-    const [result] = await connection.query('UPDATE employee SET role_id = ? WHERE id = ?', [roleId, id]);
-    connection.release();
-    return result.affectedRows;
+    const result = await pool.query('UPDATE employee SET role_id = $1 WHERE id = $2', [roleId, id]);
+    return result.rowCount;
   } catch (error) {
-    console.error(error);
+    console.error('Error updating employee role:', error);
+    throw error;
   }
 };
+
 
 //
 const updateEmployeeManager = async (id, managerId) => {
