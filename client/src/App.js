@@ -5,6 +5,7 @@ import DatabasePage from './pages/DatabasePage';
 import HomePage from './pages/Homepage2';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import EmployeesListPage from './pages/EmployeesList';
 
 function App() {
   return (
@@ -28,6 +29,16 @@ function App() {
               <React.Fragment>
                                 <Header/>
                 <DatabasePage />
+                <Footer />
+              </React.Fragment>
+            }
+          />
+           <Route
+            path="/EmployeesList"
+            element={
+              <React.Fragment>
+                                <Header/>
+                <EmployeesListPage />
                 <Footer />
               </React.Fragment>
             }

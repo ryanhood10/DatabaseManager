@@ -1,5 +1,5 @@
 import React from 'react';
-import Logo from '../assets/AkiraLogo2.webp';
+import Logo from '../assets/PalmtreeLeftLogo.webp';
 import {Link} from 'react-router-dom';
 
 
@@ -11,7 +11,7 @@ const Header = () => {
         <Link to="/" className="hover:cursor-pointer ">
           <h1 className="text-3xl font-bold text-cyan-500 hover:text-cyan-900">Database Manager</h1>
           </Link>
-          <p className="text-sm text-gray-400">by Akira Web Solutions</p>
+          <p className="text-sm text-gray-400">by Shoreline Consulting</p>
         </div>
         <div className="flex flex-col items-center md:justify-end">
           <a href="https://creativecoloring.io/" target="_blank" rel="noopener noreferrer">

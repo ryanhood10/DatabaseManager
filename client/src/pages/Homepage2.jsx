@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 
 const HomePage = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-gray-300">
+    
+    <div className="flex items-center justify-center min-h-[60vh] bg-gray-900 text-gray-300">
       <div className="max-w-3xl p-6 bg-gray-800 rounded-lg shadow-lg text-center">
         
       <h1 className="text-3xl font-bold text-cyan-500">Database Manager</h1>
