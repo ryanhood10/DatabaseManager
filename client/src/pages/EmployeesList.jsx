@@ -142,13 +142,13 @@ function EmployeesListPage() {
                   <th className="py-2 px-4">Actions</th>
                 </tr>
               </thead>
-              <tbody className="h-[600px] overflow-y-auto align-top">
+              <tbody className=" overflow-y-auto align-top">
                 {currentEmployees.map((employee) => (
                   <tr key={employee.id} className="border-t border-gray-700">
                     <td className="py-2 px-4">
                       {employee.first_name} {employee.last_name}
                     </td>
-                    <td className="py-2 px-4">
+                    <td className="py-2 px-4 ">
                       {editingEmployeeId === employee.id ? (
                         <select
                           value={selectedRoleId}
@@ -165,7 +165,7 @@ function EmployeesListPage() {
                         roles.find((role) => role.id === employee.role_id)?.title
                       )}
                     </td>
-                    <td className="py-2 px-4 flex space-x-2">
+                    <td className="py-2 px-4 flex justify-end space-x-4">
                       {editingEmployeeId === employee.id ? (
                         <>
                           <button
@@ -212,7 +212,7 @@ function EmployeesListPage() {
       <p className="text-white mb-4">
       Name: {employeeToDelete.first_name} {employeeToDelete.last_name}
           </p>
-      <div className="flex justify-between">
+      <div className="flex  justify-between">
         <button
           className="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-md"
           onClick={() => handleDeleteEmployee(employeeToDelete.roleTitle)}
