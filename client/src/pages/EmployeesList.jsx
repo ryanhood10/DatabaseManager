@@ -10,6 +10,7 @@ function EmployeesListPage() {
   const [selectedRole, setSelectedRole] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [departments, setDepartments] = useState([]);
+  const [newEmployee, setNewEmployee] = useState({ firstName: '', lastName: '', roleId: '' });
   const employeesPerPage = 10;
   const apiBaseUrl = 'http://localhost:3001';
 
@@ -36,14 +37,13 @@ function EmployeesListPage() {
 
       if (response.ok) {
         setEmployees(employees.filter((employee) => employee.id !== id));
-        setIsDeleteModalVisible(false); // Ensure modal hides on error
+        setIsDeleteModalVisible(false);
       } else {
         console.error('Failed to delete the employee');
       }
     } catch (error) {
       console.error('Error deleting employee:', error);
-      setIsDeleteModalVisible(false); // Ensure modal hides on error
-
+      setIsDeleteModalVisible(false);
     }
   };
 
@@ -78,7 +78,19 @@ function EmployeesListPage() {
       .catch((error) => console.error('Error updating role:', error));
   };
 
-  // Filter employees based on search term, selected department, and selected role
+  const handleAddEmployee = () => {
+    fetch(`${apiBaseUrl}/api/employees`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newEmployee),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setNewEmployee({ firstName: '', lastName: '', roleId: '' });
+        window.location.reload();
+      });
+  };
+
   const filteredEmployees = employees
     .filter((employee) => {
       const fullName = `${employee.first_name} ${employee.last_name}`.toLowerCase();
@@ -94,7 +106,6 @@ function EmployeesListPage() {
       return employee.role_id === parseInt(selectedRole, 10);
     });
 
-  // Pagination logic
   const indexOfLastEmployee = currentPage * employeesPerPage;
   const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
   const currentEmployees = filteredEmployees
@@ -105,7 +116,6 @@ function EmployeesListPage() {
   const totalPages = Math.ceil(filteredEmployees.length / employeesPerPage);
   const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
 
-  // Function to change page
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -120,12 +130,12 @@ function EmployeesListPage() {
 
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
-  
+
   const confirmDeleteEmployee = (employee) => {
     setEmployeeToDelete(employee);
     setIsDeleteModalVisible(true);
   };
-  
+
   return (
     <div className="w-full bg-gray-900 text-white p-6">
       <h1 className="text-4xl font-bold mb-8 text-center">Employee List</h1>
@@ -142,13 +152,13 @@ function EmployeesListPage() {
                   <th className="py-2 px-4">Actions</th>
                 </tr>
               </thead>
-              <tbody className=" overflow-y-auto align-top">
+              <tbody className="overflow-y-auto align-top">
                 {currentEmployees.map((employee) => (
                   <tr key={employee.id} className="border-t border-gray-700">
                     <td className="py-2 px-4">
                       {employee.first_name} {employee.last_name}
                     </td>
-                    <td className="py-2 px-4 ">
+                    <td className="py-2 px-4">
                       {editingEmployeeId === employee.id ? (
                         <select
                           value={selectedRoleId}
@@ -190,12 +200,11 @@ function EmployeesListPage() {
                             Edit Role
                           </button>
                           <button
-  className="bg-red-500 hover:bg-red-400 text-white px-2 py-1 rounded-md"
-  onClick={() => confirmDeleteEmployee(employee)}
->
-  Delete
-</button>
-
+                            className="bg-red-500 hover:bg-red-400 text-white px-2 py-1 rounded-md"
+                            onClick={() => confirmDeleteEmployee(employee)}
+                          >
+                            Delete
+                          </button>
                         </>
                       )}
                     </td>
@@ -204,31 +213,31 @@ function EmployeesListPage() {
               </tbody>
             </table>
             {isDeleteModalVisible && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-gray-800 p-6 rounded-lg shadow-md w-[350px]">
-    <h3 className="text-xl font-semibold text-white mb-2">
-        Are you sure you want to delete this employee record?
-      </h3>
-      <p className="text-white mb-4">
-      Name: {employeeToDelete.first_name} {employeeToDelete.last_name}
-          </p>
-      <div className="flex  justify-between">
-        <button
-          className="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-md"
-          onClick={() => handleDeleteEmployee(employeeToDelete.roleTitle)}
-        >
-          Delete
-        </button>
-        <button
-          className="bg-gray-500 hover:bg-gray-400 text-white px-4 py-2 rounded-md"
-          onClick={() => setIsDeleteModalVisible(false)}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-gray-800 p-6 rounded-lg shadow-md w-[350px]">
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Are you sure you want to delete this employee record?
+                  </h3>
+                  <p className="text-white mb-4">
+                    Name: {employeeToDelete.first_name} {employeeToDelete.last_name}
+                  </p>
+                  <div className="flex justify-between">
+                    <button
+                      className="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-md"
+                      onClick={() => handleDeleteEmployee(employeeToDelete.id)}
+                    >
+                      Delete
+                    </button>
+                    <button
+                      className="bg-gray-500 hover:bg-gray-400 text-white px-4 py-2 rounded-md"
+                      onClick={() => setIsDeleteModalVisible(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Fixed Pagination Controls */}
             <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center py-4 bg-gray-800 border-t border-gray-700">
@@ -281,6 +290,7 @@ function EmployeesListPage() {
           </div>
         </div>
 
+<div>
         {/* Search, Filter by Department, and Filter by Role Section */}
         <aside className="lg:col-span-1 h-[250px] bg-gray-800 p-4 rounded-md shadow-md">
           <h3 className="text-lg font-semibold mb-4">Search & Filter</h3>
@@ -291,7 +301,7 @@ function EmployeesListPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="border border-gray-600 rounded-md px-4 py-2 w-full mb-4 bg-gray-700 text-white"
           />
-          <select
+          {/* <select
             value={selectedDepartment}
             onChange={(e) => setSelectedDepartment(e.target.value)}
             className="border border-gray-600 rounded-md px-4 py-2 w-full mb-2 bg-gray-700 text-white"
@@ -302,7 +312,7 @@ function EmployeesListPage() {
                 {department.name}
               </option>
             ))}
-          </select>
+          </select> */}
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
@@ -316,6 +326,44 @@ function EmployeesListPage() {
             ))}
           </select>
         </aside>
+
+        {/* Add Employee Section */}
+        <aside className="lg:col-span-1 h-[260px] bg-gray-800 p-4 rounded-md shadow-md mt-4">
+          <h2 className="text-xl font-semibold mb-4 text-white">Add Employee</h2>
+          <input
+            type="text"
+            placeholder="First Name"
+            value={newEmployee.firstName}
+            onChange={(e) => setNewEmployee({ ...newEmployee, firstName: e.target.value })}
+            className="border border-gray-600 rounded-md px-4 py-2 w-full mb-2 bg-gray-700 text-white"
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={newEmployee.lastName}
+            onChange={(e) => setNewEmployee({ ...newEmployee, lastName: e.target.value })}
+            className="border border-gray-600 rounded-md px-4 py-2 w-full mb-2 bg-gray-700 text-white"
+          />
+          <select
+            value={newEmployee.roleId}
+            onChange={(e) => setNewEmployee({ ...newEmployee, roleId: e.target.value })}
+            className="border border-gray-600 rounded-md px-4 py-2 w-full mb-2 bg-gray-700 text-white"
+          >
+            <option value="">Select Role</option>
+            {roles.map((role) => (
+              <option key={role.id} value={role.id}>
+                {role.title}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={handleAddEmployee}
+            className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-md"
+          >
+            Add Employee
+          </button>
+        </aside>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ShorelineLogo from '../assets/PalmTreeTransparent.png';
 
 function DatabasePage() {
   const [departments, setDepartments] = useState([]);
@@ -154,25 +155,34 @@ function DatabasePage() {
   return (
     <div className="w-full bg-gray-900">
     <div className="max-w-4xl mx-auto p-6 bg-gray-800 text-white rounded-lg shadow-md">
-      <h1 className="text-4xl font-bold mb-4 text-center">Employee Manager</h1>
-      
+    <div className="flex items-center justify-center p-4 bg-gray-700 rounded-xl border-gray-600 border-2 ">
+          <img src={ShorelineLogo} alt="Shoreline Logo" className="filter invert h-16 w-20 md:h-20 md:w-24 mr-4" />
+          <h1 className="text-2xl font-bold  md:text-3xl">
+            Employee Database Manager
+       </h1>
+          <img src={ShorelineLogo} alt="Shoreline Logo" className="filter invert h-16 w-20 md:h-20 md:w-24 ml-4 transform scale-x-[-1]" />
+        </div>
+
+
   
       {/* Add Department Section */}
-      <div className="mb-6 border-b border-gray-700 pb-4">
-        <h2 className="text-xl font-semibold mb-2">Add Department</h2>
+      <div className="mb-6 border-b border-gray-700 pt-8 pb-4">
+        <h2 className="text-2xl font-semibold py-4 ">Departments</h2>
+        <div className='flex space-x-4'>
         <input
           type="text"
           placeholder="Department Name"
           value={newDepartment}
           onChange={(e) => setNewDepartment(e.target.value)}
-          className="border border-gray-600 rounded-md px-4 py-2 w-full mb-2 bg-gray-700 text-white"
+          className="border border-gray-600 rounded-md px-4 py-2 w-[80%]  bg-gray-700 text-white"
         />
         <button
           onClick={handleAddDepartment}
-          className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-md"
+          className="bg-blue-500 hover:bg-blue-400 text-white px-4  rounded-md"
         >
           Add Department
         </button>
+        </div>
       </div>
   
 {/* Display Departments Section */}
@@ -184,6 +194,29 @@ function DatabasePage() {
       >
         {isListVisible ? 'Hide Departments List' : 'View Departments List'}
       </p>
+      <div className="flex justify-end items-end h-full">
+      <button
+  onClick={() => (window.location.href = '/DepartmentsList')}
+  className="bg-transparent hover:bg-cyan-400 hover:bg-opacity-50 text-white px-4 py-2 rounded-md mt-2 flex items-center space-x-2 transition-all duration-300"
+>
+  <span>Departments Page</span>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    className="w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-1"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 5l7 7-7 7"
+    />
+  </svg>
+</button>
+
+      </div>
 
       {/* Conditionally render the Departments Table if the list is visible */}
       {isListVisible && (
@@ -236,8 +269,9 @@ function DatabasePage() {
 <hr className='py-4 mt-8'/>
 
       {/* Add Role Section */}
-      <div className="mb-6 border-b border-gray-700 pb-4 pt-4">
-        <h2 className="text-xl font-semibold mb-2">Add Role</h2>
+      <div className="mb-6 border-b border-gray-700 pb-4">
+        <h2 className="text-2xl font-semibold py-4 ">Roles</h2>
+        <div className='flex space-x-4'>
         <input
           type="text"
           placeholder="Role Title"
@@ -252,10 +286,12 @@ function DatabasePage() {
           onChange={(e) => setNewRole({ ...newRole, salary: e.target.value })}
           className="border border-gray-600 rounded-md px-4 py-2 w-full mb-2 bg-gray-700 text-white"
         />
+        </div>
+        <div className='flex space-x-8'>
         <select
           value={newRole.departmentId}
           onChange={(e) => setNewRole({ ...newRole, departmentId: e.target.value })}
-          className="border border-gray-600 rounded-md px-4 py-2 w-full mb-2 bg-gray-700 text-white"
+          className="border border-gray-600 rounded-md px-4 py-2 w-[80%] mb-2 bg-gray-700 text-white"
         >
           <option value="">Select Department</option>
           {departments.map((department) => (
@@ -266,10 +302,11 @@ function DatabasePage() {
         </select>
         <button
           onClick={handleAddRole}
-          className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-md"
+          className="bg-blue-500 hover:bg-blue-400 text-white px-4 w-[18%] rounded-md"
         >
           Add Role
         </button>
+        </div>
       </div>
 
      {/* Display Roles Section */}
@@ -281,6 +318,29 @@ function DatabasePage() {
   >
     {isRolesListVisible ? 'Hide Roles List' : 'View Roles List'}
   </p>
+  <div className="flex justify-end items-end h-full">
+      <button
+  onClick={() => (window.location.href = '/RolesList')}
+  className="bg-transparent hover:bg-cyan-400 hover:bg-opacity-50 text-white px-4 py-2 rounded-md mt-2 flex items-center space-x-2 transition-all duration-300"
+>
+  <span>Roles Page</span>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    className="w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-1"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 5l7 7-7 7"
+    />
+  </svg>
+</button>
+
+      </div>
 
   {/* Conditionally render the Roles Table if the list is visible */}
   {isRolesListVisible && (
@@ -302,6 +362,7 @@ function DatabasePage() {
               <tr key={role.id} className="border-t border-gray-700">
                 <td className="py-2 px-4">{role.title}</td>
                 <td className="py-2 px-4">${role.salary}</td>
+                <td className="py-2 px-4">{role.department || 'N/A'}</td>
                 <td className="py-2 px-4">
                   {departments.find((department) => department.id === role.departmentId)?.name || 'N/A'}
                 </td>
@@ -341,8 +402,9 @@ function DatabasePage() {
 <hr className='py-4 mt-8'/>
   
       {/* Add Employee Section */}
-      <div className="mb-6 border-b border-gray-700 pb-4 pt-4">
-        <h2 className="text-xl font-semibold mb-2">Add Employee</h2>
+      <div className="mb-6 border-b border-gray-700 pb-4">
+        <h2 className="text-2xl font-semibold py-4 ">Employees</h2>
+        <div className='flex space-x-4'>
         <input
           type="text"
           placeholder="First Name"
@@ -357,10 +419,12 @@ function DatabasePage() {
           onChange={(e) => setNewEmployee({ ...newEmployee, lastName: e.target.value })}
           className="border border-gray-600 rounded-md px-4 py-2 w-full mb-2 bg-gray-700 text-white"
         />
+        </div>
+        <div className='flex space-x-8'>
         <select
           value={newEmployee.roleId}
           onChange={(e) => setNewEmployee({ ...newEmployee, roleId: e.target.value })}
-          className="border border-gray-600 rounded-md px-4 py-2 w-full mb-2 bg-gray-700 text-white"
+          className="border border-gray-600 rounded-md px-4 py-2 w-[80%] mb-2 bg-gray-700 text-white"
         >
           <option value="">Select Role</option>
           {roles.map((role) => (
@@ -371,14 +435,16 @@ function DatabasePage() {
         </select>
         <button
           onClick={handleAddEmployee}
-          className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-md"
+          className="bg-blue-500 hover:bg-blue-400 text-white px-4  rounded-md"
         >
           Add Employee
         </button>
+        </div>
       </div>
   
    
 {/* Display Employees Section */}
+
 <div>
   {/* Toggle button to show/hide the Employees List */}
   <p
@@ -387,6 +453,30 @@ function DatabasePage() {
   >
     {isEmployeesListVisible ? 'Hide Employees List' : 'View Employees List'}
   </p>
+
+  <div className="flex justify-end items-end h-full">
+      <button
+  onClick={() => (window.location.href = '/EmployeesList')}
+  className="bg-transparent hover:bg-cyan-400 hover:bg-opacity-50 text-white px-4 py-2 rounded-md mt-2 flex items-center space-x-2 transition-all duration-300"
+>
+  <span>Employees Page</span>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    className="w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-1"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 5l7 7-7 7"
+    />
+  </svg>
+</button>
+
+      </div>
 
   {/* Conditionally render the Employees Table if the list is visible */}
   {isEmployeesListVisible && (
@@ -444,7 +534,7 @@ function DatabasePage() {
 
 
    {/* Update Employee Role Section */}
-   <div className="mb-6 border-t border-gray-700 pt-4">
+   {/* <div className="mb-6 border-t border-gray-700 pt-4">
         <h2 className="text-xl font-semibold mb-2">Update Employee Role</h2>
         <select
           value={selectedEmployee.id}
@@ -476,7 +566,7 @@ function DatabasePage() {
         >
           Update Role
         </button>
-      </div>
+      </div> */}
   
 
     </div>

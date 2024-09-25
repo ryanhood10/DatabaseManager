@@ -4,11 +4,12 @@ function DepartmentsListPage() {
   const [departments, setDepartments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [showAll, setShowAll] = useState(false); // State to toggle between paginated and full list display
-  const departmentsPerPage = 10;
-  const apiBaseUrl = 'http://localhost:3001';
+  const [showAll, setShowAll] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [departmentToDelete, setDepartmentToDelete] = useState(null);
+  const [newDepartment, setNewDepartment] = useState('');
+  const departmentsPerPage = 10;
+  const apiBaseUrl = 'http://localhost:3001';
 
   useEffect(() => {
     fetch(`${apiBaseUrl}/api/departments`)
@@ -35,21 +36,32 @@ function DepartmentsListPage() {
     }
   };
 
+  const handleAddDepartment = () => {
+    fetch(`${apiBaseUrl}/api/departments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ departmentName: newDepartment }),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setNewDepartment('');
+        window.location.reload(); // Refresh the page to update the list
+      });
+  };
+
   const confirmDeleteDepartment = (department) => {
     setDepartmentToDelete(department);
     setIsDeleteModalVisible(true);
   };
 
-  // Filter departments based on the search term
   const filteredDepartments = departments.filter((department) =>
     department.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Pagination logic
   const indexOfLastDepartment = currentPage * departmentsPerPage;
   const indexOfFirstDepartment = indexOfLastDepartment - departmentsPerPage;
   const currentDepartments = showAll
-    ? filteredDepartments // Show all departments when the button is pressed
+    ? filteredDepartments
     : filteredDepartments.slice().reverse().slice(indexOfFirstDepartment, indexOfLastDepartment);
 
   const totalPages = Math.ceil(filteredDepartments.length / departmentsPerPage);
@@ -171,13 +183,14 @@ function DepartmentsListPage() {
             {/* View All Departments Button */}
             <span
               className="absolute right-4 bottom-4 text-blue-500 hover:text-blue-400 cursor-pointer"
-              onClick={() => setShowAll(true)} // Toggle to show all departments
+              onClick={() => setShowAll(true)}
             >
               View All Departments
             </span>
           </div>
         </div>
 
+<div>
         {/* Search Section */}
         <aside className="lg:col-span-1 h-[250px] bg-gray-800 p-4 rounded-md shadow-md">
           <h3 className="text-lg font-semibold mb-4">Search Departments</h3>
@@ -189,6 +202,26 @@ function DepartmentsListPage() {
             className="border border-gray-600 rounded-md px-4 py-2 w-full mb-4 bg-gray-700 text-white"
           />
         </aside>
+
+        {/* Add Department Section */}
+        <aside className="lg:col-span-1 h-[250px] bg-gray-800 p-4 rounded-md shadow-md mt-4">
+          <h2 className="text-xl font-semibold mb-2">Add Department</h2>
+          <input
+            type="text"
+            placeholder="Department Name"
+            value={newDepartment}
+            onChange={(e) => setNewDepartment(e.target.value)}
+            className="border border-gray-600 rounded-md px-4 py-2 w-full mb-2 bg-gray-700 text-white"
+          />
+          <button
+            onClick={handleAddDepartment}
+            className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-md"
+          >
+            Add Department
+          </button>
+        </aside>
+
+        </div>        
       </div>
     </div>
   );

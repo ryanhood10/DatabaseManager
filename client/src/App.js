@@ -7,6 +7,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import EmployeesListPage from './pages/EmployeesList';
 import DepartmentsListPage from './pages/DepartmentsList';
+import RolesListPage from './pages/RolesList';
 
 function App() {
   return (
@@ -50,6 +51,16 @@ function App() {
               <React.Fragment>
                                 <Header/>
                 <DepartmentsListPage />
+                <Footer />
+              </React.Fragment>
+            }
+          />
+          <Route
+            path="/RolesList"
+            element={
+              <React.Fragment>
+                                <Header/>
+                <RolesListPage />
                 <Footer />
               </React.Fragment>
             }

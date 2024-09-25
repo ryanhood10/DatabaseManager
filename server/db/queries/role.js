@@ -2,13 +2,19 @@ const { pool } = require('../utils/db'); // Correct path to db.js
 
 const getRoles = async () => {
   try {
-    const { rows } = await pool.query('SELECT * FROM role');
+    const { rows } = await pool.query(`
+      SELECT role.id, role.title, role.salary, department.name AS department
+      FROM role
+      LEFT JOIN department ON role.department_id = department.id
+      ORDER BY role.id;
+    `);
     return rows || [];  // Return an empty array if no rows found
   } catch (error) {
     console.error('Error fetching roles:', error);
     throw error;
   }
 };
+
 
 
 
