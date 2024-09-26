@@ -143,7 +143,7 @@ function EmployeesListPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Employee List Section */}
         <div className="lg:col-span-2">
-          <div className="relative h-[650px] w-[85%] mx-auto mb-4 bg-gray-700 rounded-md">
+          <div className="relative h-[680px] w-[85%] mx-auto mb-4 bg-gray-700 rounded-md">
             <table className="min-w-full bg-gray-800 border-2 border-gray-700 rounded-md shadow-sm">
               <thead>
                 <tr className="bg-gray-700">

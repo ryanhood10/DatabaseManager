@@ -146,12 +146,21 @@ app.get('/api/roles', async (req, res) => {
 app.post('/api/roles', async (req, res) => {
   try {
     const { title, salary, department_id } = req.body;
+    console.log('Received role data:', { title, salary, department_id }); // Add this log
+
+    if (!department_id) {
+      return res.status(400).json({ message: 'Department ID is required.' });
+    }
+
     const roleId = await addRole(title, salary, department_id);
     res.status(201).json({ id: roleId, message: 'Role added successfully.' });
   } catch (err) {
+    console.error('Error adding role:', err);
     res.status(500).json({ error: err.message });
   }
 });
+
+
 
 app.delete('/api/roles/:id', async (req, res) => {
   try {

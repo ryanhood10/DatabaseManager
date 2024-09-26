@@ -61,14 +61,24 @@ function DatabasePage() {
   
 
   const handleAddRole = () => {
+    // Adjusting to match backend expectations
+    const rolePayload = {
+      title: newRole.title,
+      salary: newRole.salary,
+      department_id: newRole.departmentId, // Use department_id
+    };
+  
     fetch(`${apiBaseUrl}/api/roles`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newRole)
-    }).then(response => response.json()).then(() => {
-      setNewRole({ title: '', salary: '', departmentId: '' });
-      window.location.reload();
-    });
+      body: JSON.stringify(rolePayload),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setNewRole({ title: '', salary: '', departmentId: '' });
+        window.location.reload();
+      })
+      .catch((error) => console.error('Error adding role:', error));
   };
 
   const handleDeleteRole = async (id) => {
@@ -363,9 +373,7 @@ function DatabasePage() {
                 <td className="py-2 px-4">{role.title}</td>
                 <td className="py-2 px-4">${role.salary}</td>
                 <td className="py-2 px-4">{role.department || 'N/A'}</td>
-                <td className="py-2 px-4">
-                  {departments.find((department) => department.id === role.departmentId)?.name || 'N/A'}
-                </td>
+               
                 <td className="py-2 px-4">
                   <button
                     className="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-md"

@@ -21,16 +21,19 @@ const getRoles = async () => {
 
 const addRole = async (title, salary, department_id) => {
   try {
+    console.log('Inserting role with:', { title, salary, department_id }); // Add this line
     const result = await pool.query(
-      'INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3) RETURNING id',
+      'INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3) RETURNING *',
       [title, salary, department_id]
     );
+    console.log('Inserted role:', result.rows[0]); // Check the inserted role data
     return result.rows[0].id;
   } catch (error) {
     console.error('Error adding role:', error);
     throw error;
   }
 };
+
 
 const deleteRole = async (id) => {
   try {
