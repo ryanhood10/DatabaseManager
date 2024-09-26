@@ -10,6 +10,7 @@ function RolesListPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortConfig, setSortConfig] = useState(null);
   const rolesPerPage = 10;
   const apiBaseUrl = 'http://localhost:3001';
 
@@ -67,9 +68,41 @@ function RolesListPage() {
       .catch((error) => console.error('Error adding role:', error));
   };
 
-  const filteredRoles = roles.filter((role) =>
-    role.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (selectedDepartment ? role.department_id === parseInt(selectedDepartment) : true)
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedRoles = React.useMemo(() => {
+    let sortableRoles = [...roles];
+    if (sortConfig !== null) {
+      sortableRoles.sort((a, b) => {
+        if (sortConfig.key === 'salary') {
+          const salaryA = parseFloat(a.salary) || 0;
+          const salaryB = parseFloat(b.salary) || 0;
+          return sortConfig.direction === 'ascending' ? salaryA - salaryB : salaryB - salaryA;
+        } else {
+          // Sorting for role title
+          if (a[sortConfig.key] < b[sortConfig.key]) {
+            return sortConfig.direction === 'ascending' ? -1 : 1;
+          }
+          if (a[sortConfig.key] > b[sortConfig.key]) {
+            return sortConfig.direction === 'ascending' ? 1 : -1;
+          }
+        }
+        return 0;
+      });
+    }
+    return sortableRoles;
+  }, [roles, sortConfig]);
+
+  const filteredRoles = sortedRoles.filter(
+    (role) =>
+      role.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (selectedDepartment ? role.department_id === parseInt(selectedDepartment) : true)
   );
 
   const indexOfLastRole = currentPage * rolesPerPage;
@@ -104,22 +137,100 @@ function RolesListPage() {
         {/* Roles List Section */}
         <div className="lg:col-span-2">
           <div className="relative h-[680px] w-[85%] mx-auto mb-4 bg-gray-700 rounded-md">
-            <table className="min-w-full  bg-gray-800 border-2 border-gray-700 rounded-md shadow-sm">
+            <table className="min-w-full bg-gray-800 border-2 border-gray-700 rounded-md shadow-sm">
               <thead>
                 <tr className="bg-gray-700">
-                  <th className="py-2 px-4">Role Title</th>
-                  <th className="py-2 px-4">Salary</th>
+                  <th className="py-2 px-4">
+                    Role Title
+                    <span className="ml-2 cursor-pointer">
+                      <button onClick={() => requestSort('title')}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-3 h-3 inline mx-1"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19.5 9l-7.5 7.5L4.5 9"
+                          />
+                        </svg>
+                      </button>
+                      <button onClick={() => requestSort('title')}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-3 h-3 inline mx-1"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M4.5 15l7.5-7.5 7.5 7.5"
+                          />
+                        </svg>
+                      </button>
+                      <button onClick={() => setSortConfig(null)}>-</button>
+                    </span>
+                  </th>
+                  <th className="py-2 px-4">
+                    Salary
+                    <span className="ml-2 cursor-pointer">
+                      <button onClick={() => requestSort('salary')}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-3 h-3 inline mx-1"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19.5 9l-7.5 7.5L4.5 9"
+                          />
+                        </svg>
+                      </button>
+                      <button onClick={() => requestSort('salary')}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-3 h-3 inline mx-1"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M4.5 15l7.5-7.5 7.5 7.5"
+                          />
+                        </svg>
+                      </button>
+                      <button onClick={() => setSortConfig(null)}>-</button>
+                    </span>
+                  </th>
                   <th className="py-2 px-4">Department</th>
                   <th className="py-2 px-4">Actions</th>
                 </tr>
               </thead>
-              <tbody className="overflow-y-auto  align-top">
+              <tbody className="overflow-y-auto align-top">
                 {isRolesListVisible
                   ? currentRoles.map((role) => (
-                      <tr key={role.id} className="border-t  border-gray-700">
+                      <tr key={role.id} className="border-t border-gray-700">
                         <td className="py-2 px-4">{role.title}</td>
                         <td className="py-2 px-4">${role.salary}</td>
-                        <td className="py-2 px-4">{role.department || 'N/A'}</td> {/* Correct display of department */}
+                        <td className="py-2 px-4">{role.department || 'N/A'}</td>
+
+                        {/* <td className="py-2 px-4">
+                          {departments.find((dept) => dept.id === role.department_id)?.name || 'N/A'}
+                        </td> */}
                         <td className="py-2 px-4">
                           <button
                             className="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-md"
@@ -134,7 +245,7 @@ function RolesListPage() {
                       <tr key={role.id} className="border-t border-gray-700">
                         <td className="py-2 px-4">{role.title}</td>
                         <td className="py-2 px-4">${role.salary}</td>
-                        <td className="py-2 px-4">{role.department || 'N/A'}</td> {/* Correct display of department */}
+                        <td className="py-2 px-4">{role.department || 'N/A'}</td>
                         <td className="py-2 px-4">
                           <button
                             className="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-md"
@@ -156,7 +267,8 @@ function RolesListPage() {
                   </h3>
                   <p className="text-white mb-4">
                     Role: {roleToDelete?.title}, Salary: ${roleToDelete?.salary}, Department:{' '}
-                    {roleToDelete?.department || 'N/A'}
+                   {roleToDelete.department || 'N/A'}
+
                   </p>
                   <div className="flex justify-between">
                     <button
