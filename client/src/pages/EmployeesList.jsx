@@ -194,6 +194,26 @@ function EmployeesListPage() {
 
   return (
     <div className="w-full bg-gray-900 text-white p-6">
+       <button
+  onClick={() => (window.location.href = '/Database')}
+  className="flex items-center space-x-2 text-blue-500 hover:text-blue-400 transform hover:scale-105 transition-all duration-300 fixed top-30 left-24 z-50"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    className="w-6 h-6"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M15 19l-7-7 7-7"
+    />
+  </svg>
+  <span className="text-base font-medium">Home Page</span>
+</button>
       <h1 className="text-4xl font-bold mb-8 text-center">Employee List</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

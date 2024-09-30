@@ -8,6 +8,7 @@ function DepartmentsListPage() {
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [departmentToDelete, setDepartmentToDelete] = useState(null);
   const [newDepartment, setNewDepartment] = useState('');
+  const [deleteErrorMessage, setDeleteErrorMessage] = useState(''); // Initialize delete error message state
   const departmentsPerPage = 10;
   const apiBaseUrl = 'http://localhost:3001';
 
@@ -27,12 +28,26 @@ function DepartmentsListPage() {
       if (response.ok) {
         setDepartments(departments.filter((department) => department.id !== id));
         setIsDeleteModalVisible(false);
+        setDeleteErrorMessage(''); // Clear error message on successful deletion
       } else {
-        console.error('Failed to delete the department');
+        const errorData = await response.json();
+        // Check for the specific error related to foreign key constraint
+        if (
+          errorData.error &&
+          errorData.error.includes('role_department_id_fkey')
+        ) {
+          setDeleteErrorMessage(
+            'Cannot delete this department because it has roles associated with it.'
+          );
+        } else {
+          setDeleteErrorMessage(
+            'Failed to delete the department. Please try again.'
+          );
+        }
       }
     } catch (error) {
       console.error('Error deleting department:', error);
-      setIsDeleteModalVisible(false);
+      setDeleteErrorMessage('An unexpected error occurred. Please try again.');
     }
   };
 
@@ -52,6 +67,7 @@ function DepartmentsListPage() {
   const confirmDeleteDepartment = (department) => {
     setDepartmentToDelete(department);
     setIsDeleteModalVisible(true);
+    setDeleteErrorMessage(''); // Clear any existing error messages when opening the modal
   };
 
   const filteredDepartments = departments.filter((department) =>
@@ -62,7 +78,10 @@ function DepartmentsListPage() {
   const indexOfFirstDepartment = indexOfLastDepartment - departmentsPerPage;
   const currentDepartments = showAll
     ? filteredDepartments
-    : filteredDepartments.slice().reverse().slice(indexOfFirstDepartment, indexOfLastDepartment);
+    : filteredDepartments
+        .slice()
+        .reverse()
+        .slice(indexOfFirstDepartment, indexOfLastDepartment);
 
   const totalPages = Math.ceil(filteredDepartments.length / departmentsPerPage);
   const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
@@ -81,6 +100,28 @@ function DepartmentsListPage() {
 
   return (
     <div className="w-full bg-gray-900 text-white p-6">
+      
+      <button
+  onClick={() => (window.location.href = '/Database')}
+  className="flex items-center space-x-2 text-blue-500 hover:text-blue-400 transform hover:scale-105 transition-all duration-300 fixed top-30 left-24 z-50"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    className="w-6 h-6"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M15 19l-7-7 7-7"
+    />
+  </svg>
+  <span className="text-base font-medium">Home Page</span>
+</button>
+
       <h1 className="text-4xl font-bold mb-8 text-center">Departments List</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -118,7 +159,10 @@ function DepartmentsListPage() {
                   <h3 className="text-xl font-semibold text-white mb-2">
                     Are you sure you want to delete this department?
                   </h3>
-                  <p className="text-white mb-4">Name: {departmentToDelete.name}</p>
+                  <p className="text-white mb-4">Name: {departmentToDelete?.name}</p>
+                  {deleteErrorMessage && (
+                    <p className="text-red-500 mb-4">{deleteErrorMessage}</p>
+                  )}
                   <div className="flex justify-between">
                     <button
                       className="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded-md"
@@ -128,7 +172,10 @@ function DepartmentsListPage() {
                     </button>
                     <button
                       className="bg-gray-500 hover:bg-gray-400 text-white px-4 py-2 rounded-md"
-                      onClick={() => setIsDeleteModalVisible(false)}
+                      onClick={() => {
+                        setIsDeleteModalVisible(false);
+                        setDeleteErrorMessage(''); // Clear error message on cancel
+                      }}
                     >
                       Cancel
                     </button>
@@ -220,8 +267,7 @@ function DepartmentsListPage() {
             Add Department
           </button>
         </aside>
-
-        </div>        
+        </div>
       </div>
     </div>
   );
